@@ -1,0 +1,36 @@
+version: '2'
+services:
+  php5:
+    image: chialab/php:5.6-apache
+    ports:
+      - mtk363.dev:9090:80
+    volumes:
+      - ../web_app:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini
+    links:
+      - db:db
+    networks:
+      - mtk363_network
+  db:
+    image: mysql:latest
+    ports:
+      - mtk363.dev:33006:3306 # change ip if required
+    volumes:
+      - ./mtk363_data:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: mtk363
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - mtk363_network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:db
+    ports:
+      - mtk363.dev:8090:80
+    networks:
+      - mtk363_network
+
+networks:
+  mtk363_network:
+      driver: bridge
